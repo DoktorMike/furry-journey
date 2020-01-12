@@ -76,3 +76,25 @@ renderPlotly({
 })
 ```
 
+Column
+-------------------------------------
+    
+### Total competitor effect
+    
+```{r}
+renderPlotly({
+  perfdfcomptot <- perfdf %>% 
+    arrange(date) %>% 
+    dplyr::filter(date >= as.Date(input$daterange[1]), date <= as.Date(input$daterange[2]) ) %>%
+    group_by(mediagroup) %>% 
+    summarise(net=sum(net), effect=sum(effect), profit=sum(profit))
+  p1 <- ggplot(perfdfcomptot, aes(y=effect, x=mediagroup)) + 
+    geom_bar(stat="identity") + xlab("Mediagroup") + coord_flip()
+  ggplotly(p1)
+})
+```
+
+### Chart 4
+    
+```{r}
+```
