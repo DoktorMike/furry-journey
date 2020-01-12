@@ -62,7 +62,12 @@ renderPlotly({
     group_by(year, month=lubridate::month(date, label=TRUE), mediagroup) %>% 
     summarise(net=sum(net), effect=sum(effect), profit=sum(profit)) %>% 
     mutate(Month=paste0(year, "-", month))
-  p1 <- ggplot(perfdfym, aes(y=effect, x=factor(Month, levels = unique(Month)), fill=mediagroup)) + 
+  perfdfym <- perfdf %>% 
+    group_by(lubridate::year(date), lubridate::month(date), mediagroup) %>% 
+    summarise(date=min(date), net=sum(net), effect=sum(effect), profit=sum(profit)) %>% 
+    ungroup() %>% 
+    select(date, mediagroup, net, effect, profit)
+  p1 <- ggplot(perfdfym, aes(y=effect, x=date, fill=mediagroup)) + 
     geom_bar(stat="identity") + xlab("Month")
   ggplotly(p1)
 })
