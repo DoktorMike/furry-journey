@@ -47,7 +47,7 @@ dateRangeInput("daterange", label = "Date range", start = min(perfdf$date), end 
 ```
 
 
-Page 1
+Media Effects
 =====================================
 
 Row
@@ -95,7 +95,7 @@ DT::datatable(mtcars, options = list(
 ))
 ```
 
-Page 2
+Competitors
 =====================================
 
 
