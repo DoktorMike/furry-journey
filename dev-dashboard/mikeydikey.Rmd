@@ -1,15 +1,17 @@
 ---
 title: "Martina's cool dashboard"
+runtime: shiny
 output: 
   flexdashboard::flex_dashboard:
-    logo: BW7_logo_w_48px.png
-    orientation: columns
+    orientation: rows
     vertical_layout: fill
-runtime: shiny
+    logo: BW7_logo_w_48px.png
+    theme: simplex
 ---
 
-```{r global, include=FALSE}
+```{r setup, include=FALSE}
 library(flexdashboard)
+library(shiny)
 library(readr)
 library(ggplot2)
 library(plotly)
@@ -26,13 +28,10 @@ perfdf <- read_delim("data/telenor_simo_total-perfdf.csv",
 ```
 
 
-Column {data-width=650}
------------------------------------------------------------------------
+Sidebar {.sidebar}
+======================================================================
 
-### Filter
-
-Waiting time between eruptions and the duration of the eruption for the
-Old Faithful geyser in Yellowstone National Park, Wyoming, USA.
+### Filter and selections
 
 ```{r}
 selectInput("n_breaks", label = "Number of bins:",
@@ -47,39 +46,30 @@ dateRangeInput("daterange", label = "Date range", start = min(perfdf$date), end 
   autoclose = TRUE)
 ```
 
-Column {data-width=350}
+
+Page 1
+=====================================
+
+Row
 -----------------------------------------------------------------------
 
-### Chart B
-
-```{r}
-renderPlotly({
-  g1 <- ggplot(perfdf, aes(x=effect)) + geom_histogram()
-  ggplotly(g1)
-})
-```
-
-
-### Competitor effects
+### Total media effects per month
 
 ```{r}
 renderPlotly({
   perfdfym <- perfdf %>% 
     arrange(date) %>% 
     dplyr::filter(date >= as.Date(input$daterange[1]), date <= as.Date(input$daterange[2]) ) %>%
-    group_by(year, month=lubridate::month(date, label=TRUE)) %>% 
+    group_by(year, month=lubridate::month(date, label=TRUE), mediagroup) %>% 
     summarise(net=sum(net), effect=sum(effect), profit=sum(profit)) %>% 
     mutate(Month=paste0(year, "-", month))
-  p1 <- ggplot(perfdfym, aes(y=effect, x=factor(Month, levels = unique(Month)))) + 
+  p1 <- ggplot(perfdfym, aes(y=effect, x=factor(Month, levels = unique(Month)), fill=mediagroup)) + 
     geom_bar(stat="identity") + xlab("Month")
   ggplotly(p1)
 })
 ```
 
-Column
--------------------------------------
-    
-### Total competitor effect
+### Total media effect
     
 ```{r}
 renderPlotly({
@@ -94,7 +84,26 @@ renderPlotly({
 })
 ```
 
+Row 
+-----------------------------------------------------------------------
+
 ### Chart 4
-    
+   
 ```{r}
+DT::datatable(mtcars, options = list(
+  bPaginate = FALSE
+))
+```
+
+Page 2
+=====================================
+
+
+### Chart B
+
+```{r}
+renderPlotly({
+  g1 <- ggplot(perfdf, aes(x=effect)) + geom_histogram()
+  ggplotly(g1)
+})
 ```
