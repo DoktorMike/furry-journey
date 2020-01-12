@@ -1,0 +1,91 @@
+---
+title: "Test"
+output: 
+  flexdashboard::flex_dashboard:
+    logo: BW7_logo_w_48px.png
+    orientation: rows
+    vertical_layout: fill
+    #css: styles_rmd.css
+---
+
+```{r setup, include=FALSE, cache=FALSE}
+library(flexdashboard)
+library(dadata)
+library(unifiedutilities)
+#library(tidyverse)
+library(dplyr)
+library(magrittr)
+library(flextable)
+library(officer)
+library(scales)
+library(ggplot2)
+# zz <- file("all.Rout", open = "wt")
+# sink(zz, type = "message")
+source('~/business-insights-dk/helpers/plot-theme_PPT.R')
+source('~/business-insights-dk/helpers/other-helpers.R')
+source('~/business-insights-dk/helpers/plotfunctions.R')
+source('~/business-insights-dk/helpers/performanceMeasures.R')
+
+
+# custom
+advertiser <- "talkmore_norway_gross_ad_total"
+jobid <- "11086" # the presented model
+kpinice <- "sales"
+fromDate <- as.Date("2016-01-01")
+toDate <- as.Date("2019-10-31")
+currency <- "NOK"
+
+source('~/flexdashboard/data.R')
+```
+
+
+# Page 1 
+
+
+
+Row {data-width=650}
+-----------------------------------------------------------------------
+
+### Chart C
+
+```{r}
+totalSales <- sum(salesdf$value)
+valueBox(value = totalSales,icon = "fa-user-plus",caption = "Total sales",color = "green")
+```
+
+
+### Chart A
+
+```{r echo=FALSE, fig.width=20, fig.height=10, message=FALSE, warning=FALSE}
+# p <- salesdf %>% filter(date>=fromDate, date<=toDate) %>% plotKpiEpoch(kpinice) + theme_ppt() + scale_y_continuous(labels = eurocomma)
+# ggplotly(p)
+```
+
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### Chart B
+
+```{r}
+
+```
+
+
+
+# Page 2
+
+## Column 
+
+### Box A 
+
+```{r}
+
+```
+
+
+### Box B
+
+```{r}
+
+```
