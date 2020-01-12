@@ -1,22 +1,50 @@
 ---
-title: "Untitled"
+title: "Martina's cool dashboard"
 output: 
   flexdashboard::flex_dashboard:
+    logo: BW7_logo_w_48px.png
     orientation: columns
     vertical_layout: fill
+runtime: shiny
 ---
 
-```{r setup, include=FALSE}
+```{r global, include=FALSE}
 library(flexdashboard)
+library(readr)
+library(ggplot2)
+library(plotly)
+library(dplyr)
+# load data in 'global' chunk so it can be shared by all users of the dashboard
+library(datasets)
+data(faithful)
+compdf <- read_delim("data/talkmore_norway_gross_ad_total-compdf.csv", ";", escape_double = FALSE, trim_ws = TRUE)[,-1]
+# perfdf <- read_delim("data/talkmore_norway_gross_ad_total-perfdf.csv", ";", escape_double = FALSE, trim_ws = TRUE)[,-1]
+perfdf <- read_delim("data/telenor_simo_total-perfdf.csv", 
+                     ";", escape_double = FALSE, 
+                     locale = locale(decimal_mark = ",", grouping_mark = "."), 
+                     trim_ws = TRUE)[,-1]
 ```
+
 
 Column {data-width=650}
 -----------------------------------------------------------------------
 
-### Chart A
+### Filter
+
+Waiting time between eruptions and the duration of the eruption for the
+Old Faithful geyser in Yellowstone National Park, Wyoming, USA.
 
 ```{r}
+selectInput("n_breaks", label = "Number of bins:",
+            choices = c(10, 20, 35, 50), selected = 20)
 
+sliderInput("bw_adjust", label = "Bandwidth adjustment:",
+            min = 0.2, max = 2, value = 1, step = 0.2)
+
+dateRangeInput("daterange", label = "Date range", start = min(perfdf$date), end = max(perfdf$date), min = min(perfdf$date),
+  max = max(perfdf$date), format = "yyyy-mm-dd", startview = "month",
+  weekstart = 0, language = "en", separator = " to ", width = NULL,
+  autoclose = TRUE)
 ```
 
 Column {data-width=350}
@@ -25,12 +53,26 @@ Column {data-width=350}
 ### Chart B
 
 ```{r}
-
+renderPlotly({
+  g1 <- ggplot(perfdf, aes(x=effect)) + geom_histogram()
+  ggplotly(g1)
+})
 ```
 
-### Chart C
+
+### Competitor effects
 
 ```{r}
-
+renderPlotly({
+  perfdfym <- perfdf %>% 
+    arrange(date) %>% 
+    dplyr::filter(date >= as.Date(input$daterange[1]), date <= as.Date(input$daterange[2]) ) %>%
+    group_by(year, month=lubridate::month(date, label=TRUE)) %>% 
+    summarise(net=sum(net), effect=sum(effect), profit=sum(profit)) %>% 
+    mutate(Month=paste0(year, "-", month))
+  p1 <- ggplot(perfdfym, aes(y=effect, x=factor(Month, levels = unique(Month)))) + 
+    geom_bar(stat="identity") + xlab("Month")
+  ggplotly(p1)
+})
 ```
 
