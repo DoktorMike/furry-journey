@@ -99,13 +99,14 @@ DT::renderDataTable({
     arrange(date) %>% 
     dplyr::filter(date >= as.Date(input$daterange[1]), date <= as.Date(input$daterange[2]) ) %>%
     group_by(year, mediagroup) %>% 
-    summarise(net=scales::comma(sum(net)), # Note that the numbers are turned into strings here!!!!
-              effect=scales::comma(sum(effect)), 
-              profit=scales::comma(sum(profit)))
+    summarise(net=sum(net), # Note that the numbers are turned into strings here!!!!
+              effect=sum(effect), 
+              profit=sum(profit))
   
-  DT::datatable(tmpdf, options = list(
-    bPaginate = FALSE
-  ))
+  DT::datatable(tmpdf, options = list(bPaginate = FALSE), rownames = FALSE) %>% 
+    DT::formatCurrency(c('net', 'profit'), "kr. ") %>% 
+    DT::formatRound(c('effect'), 0)
+  
 })
 ```
 
