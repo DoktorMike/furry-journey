@@ -56,12 +56,12 @@ Row
 
 ```{r}
 renderPlotly({
-  perfdfym <- perfdf %>% 
-    arrange(date) %>% 
-    dplyr::filter(date >= as.Date(input$daterange[1]), date <= as.Date(input$daterange[2]) ) %>%
-    group_by(year, month=lubridate::month(date, label=TRUE), mediagroup) %>% 
-    summarise(net=sum(net), effect=sum(effect), profit=sum(profit)) %>% 
-    mutate(Month=paste0(year, "-", month))
+  # perfdfym <- perfdf %>% 
+  #   arrange(date) %>% 
+  #   dplyr::filter(date >= as.Date(input$daterange[1]), date <= as.Date(input$daterange[2]) ) %>%
+  #   group_by(year, month=lubridate::month(date, label=TRUE), mediagroup) %>% 
+  #   summarise(net=sum(net), effect=sum(effect), profit=sum(profit)) %>% 
+  #   mutate(Month=paste0(year, "-", month))
   perfdfym <- perfdf %>% 
     group_by(lubridate::year(date), lubridate::month(date), mediagroup) %>% 
     summarise(date=min(date), net=sum(net), effect=sum(effect), profit=sum(profit)) %>% 
