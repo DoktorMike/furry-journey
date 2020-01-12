@@ -6,7 +6,7 @@ output:
     orientation: rows
     vertical_layout: fill
     logo: BW7_logo_w_48px.png
-    theme: simplex
+    theme: cerulean
 ---
 
 ```{r setup, include=FALSE}
