@@ -9,16 +9,15 @@ output:
     theme: cerulean
 ---
 
-```{r setup, include=FALSE}
+```{r global, include=FALSE}
 library(flexdashboard)
 library(shiny)
 library(readr)
 library(ggplot2)
 library(plotly)
 library(dplyr)
+
 # load data in 'global' chunk so it can be shared by all users of the dashboard
-library(datasets)
-data(faithful)
 compdf <- read_delim("data/talkmore_norway_gross_ad_total-compdf.csv", ";", escape_double = FALSE, trim_ws = TRUE)[,-1]
 # perfdf <- read_delim("data/talkmore_norway_gross_ad_total-perfdf.csv", ";", escape_double = FALSE, trim_ws = TRUE)[,-1]
 perfdf <- read_delim("data/telenor_simo_total-perfdf.csv", 
@@ -90,9 +89,19 @@ Row
 ### Chart 4
    
 ```{r}
-DT::datatable(mtcars, options = list(
-  bPaginate = FALSE
-))
+DT::renderDataTable({
+  tmpdf <- perfdf %>% 
+    arrange(date) %>% 
+    dplyr::filter(date >= as.Date(input$daterange[1]), date <= as.Date(input$daterange[2]) ) %>%
+    group_by(year, mediagroup) %>% 
+    summarise(net=scales::comma(sum(net)), # Note that the numbers are turned into strings here!!!!
+              effect=scales::comma(sum(effect)), 
+              profit=scales::comma(sum(profit)))
+  
+  DT::datatable(tmpdf, options = list(
+    bPaginate = FALSE
+  ))
+})
 ```
 
 Competitors
